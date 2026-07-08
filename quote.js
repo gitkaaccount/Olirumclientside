@@ -323,3 +323,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ==========================================
+// 5. EMAILJS CHECKOUT LOGIC
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize EmailJS with your Public Key
+    // REPLACE "YOUR_PUBLIC_KEY" WITH YOUR ACTUAL KEY
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(CXP3r5IinhevalOUK);
+    }
+
+    // 2. Unhide the checkout form if the cart has items
+    const quoteList = JSON.parse(localStorage.getItem('quoteItems')) || [];
+    const checkoutContainer = document.getElementById('checkout-form-container');
+    if (quoteList.length > 0 && checkoutContainer) {
+        checkoutContainer.style.display = "block";
+    }
+
+    // 3. Handle the Form Submission
+    const quoteForm = document.getElementById('quote-form');
+    if (quoteForm) {
+        quoteForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Stop page from refreshing
+            
+            const btn = document.getElementById('submit-quote-btn');
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            // Format the cart data into a neat text list for the email
+            let cartDetails = "";
+            let totalEstimate = 0;
+            
+            quoteList.forEach(item => {
+                const subtotal = item.quantity * item.price;
+                cartDetails += `${item.quantity}x ${item.name} (₹${item.price.toFixed(2)}) = ₹${subtotal.toFixed(2)}\n`;
+                totalEstimate += subtotal;
+            });
+            cartDetails += `\n-----------------------\nESTIMATED TOTAL: ₹${totalEstimate.toFixed(2)}`;
+
+            // Match these keys to the {{variables}} in your EmailJS template
+            const templateParams = {
+                user_name: document.getElementById('user_name').value,
+                user_email: document.getElementById('user_email').value,
+                cart_data: cartDetails
+            };
+
+            // REPLACE THESE WITH YOUR ACTUAL SERVICE ID AND TEMPLATE ID
+            emailjs.send(service_x00vgxa, template_w58swuh, templateParams)
+                .then(function(response) {
+                   alert("Success! Your quote request has been sent.");
+                   localStorage.removeItem('quoteItems'); // Clear the cart
+                   window.location.reload(); // Refresh to show empty cart
+                }, function(error) {
+                   console.error("EmailJS Error:", error);
+                   alert("Failed to send request. Please try again.");
+                   btn.innerText = "Send Request";
+                   btn.disabled = false;
+                });
+        });
+    }
+});

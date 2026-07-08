@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quote Request - Olirum Scientific</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -104,6 +105,15 @@
         <div id="quote-cart-container">
             <!-- Table will be generated here -->
         </div>
+        <!-- This form will only show up if there are items in the cart -->
+<div id="checkout-form-container" style="display: none; margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+    <h3 style="margin-bottom: 15px;">Request Official Quote</h3>
+    <form id="quote-form" style="display: flex; flex-direction: column; gap: 15px; max-width: 400px;">
+        <input type="text" id="user_name" placeholder="Your Full Name" required style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <input type="email" id="user_email" placeholder="Your Email Address" required style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="submit" id="submit-quote-btn" class="btn-quote" style="width: 100%;">Send Request</button>
+    </form>
+</div>
         
         <!-- The Form to capture user email and send the quote -->
         <div class="quote-form" style="margin-top: 40px; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
