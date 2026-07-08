@@ -29,6 +29,8 @@ async function loadProductData() {
             quoteBtn.setAttribute('data-category', product.category);
             
             quoteBtn.style.display = "block"; 
+            // ADD THIS NEW LINE RIGHT HERE:
+            quoteBtn.addEventListener('click', addToQuote);
             document.title = `${product.name} - Olirum Scientific`;
         } else {
             document.getElementById('dynamic-title').innerText = "Product Not Found";
