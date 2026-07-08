@@ -1,5 +1,9 @@
 /* Import Michroma Font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+/* Pushes the footer to the bottom without stretching the navbar */
+main {
+    min-height: calc(100vh - 250px); /* 250px roughly accounts for your header and footer height combined */
+}
 
 /* --- Global Styles --- */
 body {

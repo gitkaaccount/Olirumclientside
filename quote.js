@@ -331,7 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize EmailJS with your Public Key
-    // REPLACE "YOUR_PUBLIC_KEY" WITH YOUR ACTUAL KEY
     if (typeof emailjs !== 'undefined') {
         emailjs.init("CXP3r5IinhevalOUK");
     }
@@ -353,25 +352,86 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerText = "Sending...";
             btn.disabled = true;
 
-            // Format the cart data into a neat text list for the email
-            let cartDetails = "";
+            // --- HTML EMAIL GENERATOR ---
+            
+            // MASTER SETTING: Change to false to hide prices in the buyer's email
+            const showPricesToBuyer = true; 
+
             let totalEstimate = 0;
             
+            // Start the Seller Table (Always shows prices)
+            let sellerCartHTML = `
+                <table style="width:100%; border-collapse: collapse; font-family: sans-serif;">
+                    <tr style="background-color: #f4f4f4;">
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Product</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Qty</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Subtotal</th>
+                    </tr>
+            `;
+
+            // Start the Buyer Table (Dynamic based on your setting)
+            let buyerCartHTML = `
+                <table style="width:100%; border-collapse: collapse; font-family: sans-serif;">
+                    <tr style="background-color: #f4f4f4;">
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Product</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Qty</th>
+                        ${showPricesToBuyer ? '<th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Subtotal</th>' : ''}
+                    </tr>
+            `;
+
+            // Loop through the cart and build the HTML rows
             quoteList.forEach(item => {
                 const subtotal = item.quantity * item.price;
-                cartDetails += `${item.quantity}x ${item.name} (₹${item.price.toFixed(2)}) = ₹${subtotal.toFixed(2)}\n`;
                 totalEstimate += subtotal;
+                
+                // Add row to Seller Table
+                sellerCartHTML += `
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${subtotal.toFixed(2)}</td>
+                    </tr>
+                `;
+
+                // Add row to Buyer Table
+                buyerCartHTML += `
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+                        ${showPricesToBuyer ? `<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₹${subtotal.toFixed(2)}</td>` : ''}
+                    </tr>
+                `;
             });
-            cartDetails += `\n-----------------------\nESTIMATED TOTAL: ₹${totalEstimate.toFixed(2)}`;
+
+            // Add the Total Row to the Seller Table
+            sellerCartHTML += `
+                <tr>
+                    <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">ESTIMATED TOTAL:</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">₹${totalEstimate.toFixed(2)}</td>
+                </tr>
+                </table>
+            `;
+
+            // Add the Total Row to the Buyer Table (if prices are shown)
+            if (showPricesToBuyer) {
+                buyerCartHTML += `
+                    <tr>
+                        <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">ESTIMATED TOTAL:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">₹${totalEstimate.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            buyerCartHTML += `</table>`;
 
             // Match these keys to the {{variables}} in your EmailJS template
             const templateParams = {
                 user_name: document.getElementById('user_name').value,
                 user_email: document.getElementById('user_email').value,
-                cart_data: cartDetails
+                cart_html_seller: sellerCartHTML,
+                cart_html_buyer: buyerCartHTML
             };
 
-            // REPLACE THESE WITH YOUR ACTUAL SERVICE ID AND TEMPLATE ID
+            // Using your exact Service ID and Template ID
             emailjs.send('service_x00vgxa', 'template_w58swuh', templateParams)
                 .then(function(response) {
                    alert("Success! Your quote request has been sent.");
