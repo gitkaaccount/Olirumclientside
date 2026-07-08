@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize EmailJS with your Public Key
     // REPLACE "YOUR_PUBLIC_KEY" WITH YOUR ACTUAL KEY
     if (typeof emailjs !== 'undefined') {
-        emailjs.init(CXP3r5IinhevalOUK);
+        emailjs.init("CXP3r5IinhevalOUK");
     }
 
     // 2. Unhide the checkout form if the cart has items
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             // REPLACE THESE WITH YOUR ACTUAL SERVICE ID AND TEMPLATE ID
-            emailjs.send(service_x00vgxa, template_w58swuh, templateParams)
+            emailjs.send('service_x00vgxa', 'template_w58swuh', templateParams)
                 .then(function(response) {
                    alert("Success! Your quote request has been sent.");
                    localStorage.removeItem('quoteItems'); // Clear the cart
